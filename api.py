@@ -50,12 +50,12 @@ def recognize_image():
     res = lab[y_class]
     
     # Return the result as a JSON object
-    result = {
+    result = [{
         'class': res.split("_")[1],
         'scientific_class': res.split("_")[0],
         'probability': float(y_prob)
-    }
-    return jsonify(result)
+    }]
+    return jsonify({'images':result})
 
 
 
@@ -211,17 +211,27 @@ def writeResultsToFile(detections, min_conf):
     rcnt = 0
     results_list = []
     with open('results.csv', 'w') as rfile:
-        rfile.write('Start (s);End (s);Scientific name;Common name;Confidence\n')
+        head = 'Start (s);End (s);Scientific name;Common name;Confidence'
+        rfile.write(head + '\n')
+        headers = head.strip().split(';')
         for d in detections:
             for entry in detections[d]:
                 if entry[1] >= min_conf:
                     result_str =d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1])
                     rfile.write(result_str + '\n')
                     print("\n"+result_str)
-                    results_list.append(result_str)
+                    fields = result_str.split(';')
+                    result_dict = {
+                        headers[0]: float(fields[0]),
+                        headers[1]: float(fields[1]),
+                        headers[2]: fields[2],
+                        headers[3]: fields[3],
+                        headers[4]: float(fields[4])
+                    }
+                    results_list.append(result_dict)
                     rcnt += 1
     print('DONE! WROTE', rcnt, 'RESULTS.')
-    return results_list
+    return jsonify({'audio': results_list})
 
 
 interpreter = loadModel()
