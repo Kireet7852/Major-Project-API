@@ -50,12 +50,12 @@ def recognize_image():
     res = lab[y_class]
     
     # Return the result as a JSON object
-    result = [{
+    result = {
         'class': res.split("_")[1],
         'scientific_class': res.split("_")[0],
         'probability': float(y_prob)
-    }]
-    return jsonify({'images':result})
+    }
+    return jsonify(result)
 
 
 
@@ -187,8 +187,8 @@ def predict(sample, interpreter, sensitivity):
     # Only return first the top ten results
     return p_sorted[:10]
 
-
 def convertMetadata(m):
+
 
     # Convert week to cosine
     if m[2] >= 1 and m[2] <= 48:
@@ -269,4 +269,4 @@ def predict_species():
     return output
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, threaded=True)
+    app.run(host='0.0.0.0',port=8080, threaded=True)
